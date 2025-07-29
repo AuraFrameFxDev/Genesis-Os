@@ -53,11 +53,33 @@ subprojects {
     // Configure Android projects
     pluginManager.withPlugin("com.android.application") {
         configure<com.android.build.gradle.BaseExtension> {
-            compileSdkVersion(34)
-            
+            compileSdkVersion(36)
+
             defaultConfig {
                 minSdk = 33
-                targetSdk = 34
+                targetSdk = 36
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+
+            // Configure Compose for Android projects
+            buildFeatures.compose = true
+
+            composeOptions {
+                kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+            }
+        }
+    }
+    pluginManager.withPlugin("com.android.library") {
+        configure<com.android.build.gradle.BaseExtension> {
+            compileSdkVersion(36)
+
+            defaultConfig {
+                minSdk = 33
+                targetSdk = 36
             }
             
             compileOptions {

@@ -40,12 +40,8 @@ pluginManagement {
                 requested.id.id == "com.google.dagger.hilt.android" ->
                     useModule("com.google.dagger:hilt-android-gradle-plugin:${requested.version}")
                     
-                // Compose plugin
-                requested.id.id == "org.jetbrains.compose" -> {
-                    useModule("org.jetbrains.compose:compose-gradle-plugin:${requested.version}")
-                    // Disable iOS ARM32 for Compose
-                    System.setProperty("org.jetbrains.compose.experimental.uikit.enabled", "false")
-                }
+                // Note: Removed Compose Multiplatform plugin configuration as we're using standard Android Compose
+                // Compose Multiplatform is not compatible with our current setup
             }
         }
     }

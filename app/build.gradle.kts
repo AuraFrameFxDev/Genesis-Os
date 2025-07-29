@@ -4,11 +4,11 @@ plugins {
     // Core plugins
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    
     // Hilt - Must be applied after Kotlin plugin
     alias(libs.plugins.hilt.android)
     
-    // KSP
+    // KSP - Must be applied after Hilt plugin
     alias(libs.plugins.ksp)
     
     // Kotlin plugins
@@ -63,7 +63,7 @@ android {
 
     // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+        kotlinCompilerExtensionVersion = "1.9.0-beta01"
     }
 
     // Packaging options
@@ -146,10 +146,14 @@ android {
 // Dependencies block OUTSIDE android {}
 dependencies {
     // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    implementation("com.google.dagger:hilt-android:${libs.versions.hilt.get()}")
+    ksp(libs.hilt.android.compiler.ksp)
     implementation(libs.hilt.navigation.compose)
-
+    
+    // Hilt testing
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.android.compiler.ksp)
+    
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -162,11 +166,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
-    
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
     
     // Network
     implementation(libs.retrofit)
@@ -188,8 +187,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     
-    // Hilt testing
-    kspAndroidTest(libs.hilt.compiler.get())
+    // Hilt testing configuration is now in the main dependencies block
 }
 
 // Detekt configuration

@@ -14,28 +14,28 @@ coreKtx = "1.16.0"
 appcompat = "1.6.1"
 material = "1.12.0"
 lifecycle = "2.9.2"
-activityCompose = "1.9.0"
-composeBom = "2025.07.00"
+activityCompose = "1.9.0-beta01"
+composeBom = "2025.07.00"  # Using the latest BOM that works with 1.9.0-beta01
 # Dependencies
 hilt = "2.57"
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
 retrofit = "3.0.0"
 okhttp = "5.1.0"
 coroutines = "1.10.2"
 room = "2.7.2"
 # Compose Compiler - Must match Kotlin version for K2 support
-composeCompiler = "2.2.0-beta01"  # Matches Kotlin 2.2.0
+composeCompiler = "1.9.0-beta01"  # Matches Java 24 compatibility
 # Firebase & Google Services
 googleServices = "4.4.1"
 firebaseBom = "33.0.0"
 firebasePerf = "1.4.2"
 firebaseCrashlytics = "2.9.9"
 # Additional Compose
-composeUiTestJunit4 = "1.7.0"
-composeUiTooling = "1.8.3"
-composeUiToolingPreview = "1.8.3"
-composeMaterial3 = "1.3.2"
-composeActivityCompose = "1.10.1"
+composeUiTestJunit4 = "1.9.0-beta01"
+composeUiTooling = "1.9.0-beta01"
+composeUiToolingPreview = "1.9.0-beta01"
+composeMaterial3 = "1.9.0-beta01"
+composeActivityCompose = "1.9.0-beta01"
 # Timber & Coil
 timber = "5.0.1"
 coilCompose = "2.7.0"
@@ -93,19 +93,20 @@ lifecycle-base-ktx = { group = "androidx.lifecycle", name = "lifecycle-base-ktx"
 # Compose
 compose-compiler = { group = "androidx.compose.compiler", name = "compiler", version.ref = "composeCompiler" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-# Use BOM versions for all Compose dependencies
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }  # Version comes from BOM
-androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "composeUiTooling" }
-androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeUiTooling" }
-androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "composeUiToolingPreview" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "composeMaterial3" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivityCompose" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.9.2" }
+# All Compose dependencies use versions from the BOM
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose" }
 
 # Hilt
 hilt-android = { group = "com.google.dagger.hilt.android", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger.hilt.android", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+hilt-android-compiler-ksp = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 
 # Retrofit

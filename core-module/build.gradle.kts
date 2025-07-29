@@ -11,13 +11,13 @@ plugins {
 
 android {
     namespace = "dev.aurakai.auraframefx.core"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        
+
         // Enable vector drawable support
         vectorDrawables {
             useSupportLibrary = true
@@ -26,21 +26,25 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isMinifyEnabled = false
+        }
     }
-    
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
         isCoreLibraryDesugaringEnabled = true
     }
-    
-    // Migrate deprecated kotlinOptions to compilerOptions DSL for K2
+
+    // Kotlin compiler options with K2
     kotlin {
         compilerOptions {
             jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
@@ -57,32 +61,31 @@ android {
         }
     }
 
-    // Compose configuration
+    // Build features
     buildFeatures {
         compose = true
         buildConfig = true
     }
-    
+
+    // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
+        kotlinCompilerExtensionVersion = "2.2.0" // Using stable version for better compatibility
     }
-            )
-        }
-    }
-    
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
-    }
-    
+
+    // Packaging options
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/AL2.0"
             excludes += "/META-INF/LGPL2.1"
+            // Exclude AndroidX version files
+            excludes += "META-INF/*.version"
+            // Exclude consumer proguard rules
+            excludes += "META-INF/proguard/*"
+            // Exclude the Firebase/Fabric/other SDK files
+            excludes += "/*.properties"
+            excludes += "fabric/*.properties"
+            excludes += "DebugProbesKt.bin"
         }
     }
 }
@@ -91,35 +94,30 @@ android {
 dependencies {
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.2")
-    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
     
     // Compose
-    implementation(platform("androidx.compose:compose-bom:2025.07.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.3.2")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    
-    // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.2")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
     
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57")
-    ksp("com.google.dagger:hilt-android-compiler:2.57")
+    implementation("com.google.dagger:hilt-android:${libs.versions.hilt.get()}")
+    ksp("com.google.dagger:hilt-android-compiler:${libs.versions.hilt.get()}")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    
+    // Firebase & Google Services (if needed in core-module)
+    implementation(platform(libs.firebase.bom))
+
     // Core library desugaring
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
-    
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.07.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 }

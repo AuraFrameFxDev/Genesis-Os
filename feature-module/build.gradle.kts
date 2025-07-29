@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.kotlin.compose)
 }
 
 // Configure Kotlin compiler options
@@ -18,7 +18,7 @@ java {
 
 android {
     namespace = "dev.aurakai.auraframefx.feature"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 33
@@ -33,11 +33,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isMinifyEnabled = false
         }
     }
     
@@ -47,35 +51,47 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
     
-    // Configure Kotlin compiler options
+    // Configure Kotlin compiler options with K2
     kotlin {
-        jvmToolchain(24)
-        
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
             freeCompilerArgs.addAll(
                 "-Xuse-k2",
                 "-Xskip-prerelease-check",
                 "-opt-in=kotlin.RequiresOptIn",
                 "-opt-in=kotlin.ExperimentalStdlibApi",
                 "-opt-in=kotlin.contracts.ExperimentalContracts",
-                "-Xjvm-default=all"
+                "-Xjvm-default=all",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
             )
         }
     }
     
+    // Build features
     buildFeatures {
         compose = true
     }
+    
+    // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
+        kotlinCompilerExtensionVersion = "2.2.0" // Using stable version for better compatibility
     }
     
+    // Packaging options
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/AL2.0"
             excludes += "/META-INF/LGPL2.1"
+            // Exclude AndroidX version files
+            excludes += "META-INF/*.version"
+            // Exclude consumer proguard rules
+            excludes += "META-INF/proguard/*"
+            // Exclude the Firebase/Fabric/other SDK files
+            excludes += "/*.properties"
+            excludes += "fabric/*.properties"
+            excludes += "DebugProbesKt.bin"
         }
     }
 }
@@ -86,36 +102,41 @@ dependencies {
     implementation(project(":core-module"))
     
     // Core AndroidX
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.2")
-    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
     
-    // Compose
-    implementation(platform("androidx.compose:compose-bom:2025.07.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.3.2")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Compose BOM
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+    
+    // Compose dependencies
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    
+    // Debug implementations
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.9.2")
+    implementation(libs.androidx.navigation.compose)
     
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57")
-    ksp("com.google.dagger:hilt-android-compiler:2.57")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
     
     // Core library desugaring
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2025.07.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

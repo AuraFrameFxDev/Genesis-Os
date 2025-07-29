@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.compose.plugin)
+    // Using standard Android Compose plugin instead of Compose Multiplatform
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -44,7 +45,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
+        kotlinCompilerExtensionVersion = "1.9.0-beta01"
     }
 }
 
@@ -63,17 +64,16 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    
+    ksp(libs.hilt.android.compiler.ksp)
     // Hilt Navigation Compose
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.navigation.compose)
     
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.8.3")
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
