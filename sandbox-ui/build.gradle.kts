@@ -1,19 +1,9 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath(libs.android.gradle.plugin)
-    }
-}
-
 plugins {
-    id("com.android.library") version "8.1.1"  // Use the version from your libs.versions.toml
-    id("org.jetbrains.kotlin.android") version "2.0.0"  // Match your Kotlin version
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
-    id("com.google.devtools.ksp") version "2.0.0-1.0.21"  // Match your Kotlin version
-    id("com.google.dagger.hilt.android") version "2.50"  // Match your Hilt version
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -50,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
@@ -68,8 +58,6 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
-    implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-compiler:2.50") // Add missing Hilt compiler dependency
     ksp(libs.hilt.compiler)
 
     // Testing
