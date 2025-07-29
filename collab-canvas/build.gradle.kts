@@ -30,17 +30,17 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.8.2" // Should match your Compose version
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.29.2"
+            version = libs.versions.cmake.get()
         }
     }
 
-    ndkVersion = "26.2.11394342"
+    ndkVersion = libs.versions.ndk.get()
 }
 
 dependencies {
