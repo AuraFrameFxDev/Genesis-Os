@@ -145,7 +145,7 @@ android {
 
 // Dependencies block OUTSIDE android {}
 dependencies {
-    // Hilt
+    // Hilt (remove redundant second instance)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
@@ -162,11 +162,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
-    
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
     
     // Network
     implementation(libs.retrofit)
