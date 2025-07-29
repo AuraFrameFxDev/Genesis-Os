@@ -1,4 +1,5 @@
 [versions]
+compose = "1.8.2"
 # Core
 agp = "8.11.1"
 gradle = "8.14.3"
@@ -67,7 +68,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 # Compose
-compose = { id = "org.jetbrains.compose", version = "1.8.2" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 # Google Services
