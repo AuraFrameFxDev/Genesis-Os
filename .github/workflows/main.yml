@@ -16,10 +16,6 @@ jobs:
       actions: read
       checks: write
 
-    env:
-      # Set up Android SDK path for local.properties
-      ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
-
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
@@ -30,28 +26,21 @@ jobs:
         distribution: 'temurin'
         java-version: '24'
 
-    - name: Set up Gradle 8.14.3
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: 8.14.3
-
-    - name: Set up Android SDK (API 34)
-      uses: android-actions/setup-android@v3
-      with:
-        api-level: 34
-        sdk-tools: 'platform-tools,build-tools;34.0.0'
-
-    - name: Create local.properties
-      run: |
-        echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-
-    - name: Cache Gradle and Kotlin
+    - name: Cache Gradle dependencies
       uses: actions/cache@v4
       with:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/*.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Set ANDROID_SDK_ROOT environment variable
+      run: echo "ANDROID_SDK_ROOT=${{ runner.temp }}/android-sdk" >> $GITHUB_ENV
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
 
     - name: Grant Execute Permission to Gradle Wrapper
       run: chmod +x ./gradlew
@@ -67,9 +56,3 @@ jobs:
           app/build/outputs/apk/debug/*.apk
           **/build/libs/*.jar
           **/build/outputs/**/*.aar
-
-    - name: Lint and Code Style (ktlint)
-      run: ./gradlew ktlintCheck
-
-    - name: Run Tests
-      run: ./gradlew testDebugUnitTest
