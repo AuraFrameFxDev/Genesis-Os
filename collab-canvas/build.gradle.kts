@@ -1,7 +1,7 @@
 plugins {
-    id("org.jetbrains.compose") version "1.8.2"
-    id("com.android.application")
-    // Add other plugins as needed
+    alias(libs.plugins.compose)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 repositories {
@@ -11,28 +11,12 @@ repositories {
     maven("https://jitpack.io")
 }
 
-android {
-    // Enable ViewBinding for legacy views if needed
-    buildFeatures {
-        viewBinding = true
-        // dataBinding = true // Uncomment if needed
-    }
+// Your android { ... } block here
 
-    // Configure CMake for native code
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.29.2" // Latest stable CMake version
-        }
-    }
-
-    ndkVersion = "26.2.11394342" // Latest stable NDK version
-}
-
-// Add your Compose-specific or other dependencies below
 dependencies {
-    implementation(compose.ui)
-    implementation(compose.material)
-    implementation(compose.preview)
-    // Add other dependencies as needed
+    // Use aliases for libraries if you have them in your TOML
+    // For example:
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material)
+    implementation(libs.compose.preview)
 }
