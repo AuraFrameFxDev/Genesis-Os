@@ -27,14 +27,23 @@ plugins {
 // Common configuration for all subprojects
 subprojects {
     // Configure Java toolchain for all Java projects
-// Configure all projects
+// Configure all projects including the root project
     allprojects {
         // Configure Java toolchain for all projects
         plugins.withType<JavaBasePlugin> {
             configure<JavaPluginExtension> {
                 toolchain {
                     languageVersion.set(JavaLanguageVersion.of(24))
-                    vendor.set(JvmVendorSpec.AZUL)
+                    // Remove vendor specification to allow any JDK 24 implementation
+                    // vendor.set(JvmVendorSpec.AZUL)
+                }
+            }
+            
+            // Explicitly set Java toolchain for all source sets
+            afterEvaluate {
+                tasks.withType<JavaCompile>().configureEach {
+                    sourceCompatibility = JavaVersion.VERSION_24.toString()
+                    targetCompatibility = JavaVersion.VERSION_24.toString()
                 }
             }
         }
@@ -62,12 +71,11 @@ subprojects {
             }
         }
     }
-
-
-    tasks.register<Delete>("clean") {
-        delete(rootProject.layout.buildDirectory)
-        delete("$rootDir/build/")
-        delete("$rootDir/app/build/")
-    }
 }
 
+// Register clean task only at the root level
+tasks.register<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory)
+    delete("$rootDir/build/")
+    delete("$rootDir/app/build/")
+}

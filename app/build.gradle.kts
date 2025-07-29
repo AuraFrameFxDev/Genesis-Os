@@ -1,18 +1,14 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.serialization)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("org.openapi.generator")
     id("io.gitlab.arturbosch.detekt")
 }
 
-// Explicitly apply LifecycleBasePlugin for compatibility
-apply(plugin = "base")
-
-// Android configuration
 android {
     namespace = "dev.aurakai.auraframefx"
     compileSdk = 36
@@ -39,237 +35,146 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
-        isCoreLibraryDesugaringEnabled = true
-    }
-
-    kotlinOptions {
-        jvmTarget = "24"
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-k2",
-            "-Xskip-prerelease-check",
-            "-opt-in=kotlin.RequiresOptIn",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-            "-opt-in=kotlin.contracts.ExperimentalContracts",
-            "-Xjvm-default=all",
-            "-Xexplicit-api=strict",
-            "-progressive"
-        )
-    }
-
     buildFeatures {
-        compose = true
         buildConfig = true
+        compose = true
+        viewBinding = true
     }
 
+    // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion = "2.2.0"
     }
 
+    // Packaging options
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/AL2.0",
+                "/META-INF/LGPL2.1",
+                "META-INF/LICENSE*",
+                "META-INF/NOTICE*"
+            )
         }
     }
-}
 
-// Configure OpenAPI Generator
-openApiGenerate {
-    generatorName.set("kotlin")
-    inputSpec.set("${rootProject.projectDir}/openapi.yml")
-    outputDir.set("${layout.buildDirectory.get()}/generated/openapi")
-    configFile.set("${rootProject.projectDir}/openapi-generator-config.json")
-    skipOverwrite.set(false)
-    library.set("jvm-retrofit2")
-    apiPackage.set("dev.aurakai.auraframefx.api.generated")
-    modelPackage.set("dev.aurakai.auraframefx.model.generated")
-    configOptions.set(mapOf(
-        "useCoroutines" to "true",
-        "serializationLibrary" to "kotlinx_serialization",
-        "enumPropertyNaming" to "UPPERCASE"
-    ))
-}
+    // Java toolchain
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(24))
+        }
+    }
 
-// Add generated sources to the main source set
-android.sourceSets.getByName("main") {
-    java.srcDir(layout.buildDirectory.dir("generated/openapi/src/main/kotlin"))
-}
+    // Kotlin compilerOptions DSL (use enum if available, fallback to legacy)
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        compilerOptions {
+            // If JvmTarget.JVM_24 is not available, use JvmTarget.JVM_17 or fallback to legacy kotlinOptions
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            freeCompilerArgs.addAll(
+                listOf(
+                    "-Xjsr305=strict",
+                    "-opt-in=kotlin.RequiresOptIn"
+                )
+            )
+        }
+    }
 
-// Ensure OpenAPI generation happens before compilation
-tasks.named("preBuild") {
-    dependsOn("openApiGenerate")
-}
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = true
+    }
 
-
-// Configure OpenAPI Generator for the app module
-project(":app").afterEvaluate {
-    apply(plugin = "org.openapi.generator")
-
-    configure<org.openapitools.generator.gradle.plugin.extensions.OpenApiGeneratorGenerateExtension> {
+    openApiGenerate {
         generatorName.set("kotlin")
         inputSpec.set("${rootProject.projectDir}/openapi.yml")
-        outputDir.set("${layout.buildDirectory.get()}/generated/openapi")
+        outputDir.set(layout.buildDirectory.dir("generated/openapi").get().asFile.path)
         configFile.set("${rootProject.projectDir}/openapi-generator-config.json")
         skipOverwrite.set(false)
         library.set("jvm-retrofit2")
         apiPackage.set("dev.aurakai.auraframefx.api.generated")
         modelPackage.set("dev.aurakai.auraframefx.model.generated")
-        configOptions.set(
-            mapOf(
-                "useCoroutines" to "true",
-                "serializationLibrary" to "kotlinx_serialization",
-                "enumPropertyNaming" to "UPPERCASE"
-            )
-        )
+        configOptions.set(mapOf(
+            "useCoroutines" to "true",
+            "serializationLibrary" to "kotlinx_serialization",
+            "enumPropertyNaming" to "UPPERCASE"
+        ))
+    }
+
+    // Add generated sources to the main source set
+    sourceSets.getByName("main") {
+        java.srcDir(layout.buildDirectory.dir("generated/openapi/src/main/kotlin"))
+    }
+
+    // Ensure OpenAPI generation happens before compilation
+    tasks.named("preBuild") {
+        dependsOn("openApiGenerate")
     }
 }
 
-
-// Configure OpenAPI generation
-project(":app").openApiGenerate {
-    generatorName.set("kotlin")
-    inputSpec.set(rootProject.layout.projectDirectory.file("openapi.yml").asFile.path)
-    outputDir.set(layout.buildDirectory.dir("generated/openapi").get().asFile.path)
-    configFile.set(rootProject.layout.projectDirectory.file("openapi-generator-config.json").asFile.path)
-    skipOverwrite.set(false)
-    library.set("jvm-retrofit2")
-    apiPackage.set("dev.aurakai.auraframefx.api.generated")
-    modelPackage.set("dev.aurakai.auraframefx.model.generated")
-    configOptions.set(mapOf(
-        "useCoroutines" to "true",
-        "serializationLibrary" to "kotlinx_serialization",
-        "enumPropertyNaming" to "UPPERCASE"
-    ))
-}
-
-// Add generated sources to the main source set
-project(":app").android.sourceSets.getByName("main") {
-    java.srcDir(layout.buildDirectory.dir("generated/openapi/src/main/kotlin"))
-}
-
-// Ensure OpenAPI generation happens before compilation
-project(":app").tasks.named("preBuild") {
-    dependsOn("openApiGenerate")
-}
-
-// Android configuration
-project(":app").android {
-    namespace = "dev.aurakai.auraframefx"
-    compileSdk = 36
-    
-    defaultConfig {
-        applicationId = "dev.aurakai.auraframefx"
-        minSdk = 33
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-        
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
-        isCoreLibraryDesugaringEnabled = true
-    }
-    
-    kotlinOptions {
-        jvmTarget = "24"
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-k2",
-            "-Xskip-prerelease-check",
-            "-opt-in=kotlin.RequiresOptIn",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-            "-opt-in=kotlin.contracts.ExperimentalContracts",
-            "-Xjvm-default=all"
-        )
-    }
-    
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
-    
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "/META-INF/AL2.0"
-            excludes += "/META-INF/LGPL2.1"
-        }
-    }
-}
-
+// Dependencies block OUTSIDE android {}
 dependencies {
-    // Core AndroidX
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    
-    // Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
-    
-    // Hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp.logging)
-    
-    // Coil
-    implementation(libs.coil.compose)
-    
-    // Timber
-    implementation(libs.timber)
-    
-    // Core library desugaring
-    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
-    
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation(platform("androidx.compose:compose-bom:2025.07.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("com.google.dagger:hilt-android:2.57")
+    kapt("com.google.dagger:hilt-compiler:2.57")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
 }
 
-// Detekt configuration for static analysis
-detekt {
-    toolVersion = "1.22.0"
-    config = files("$rootDir/config/detekt/detekt.yml")
-    baseline = file("$rootDir/config/detekt/baseline.xml")
+// Detekt configuration
+ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    buildUponDefaultConfig = true
+    allRules = false
+    parallel = true
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     reports {
-        xml.enabled = false
-        html.enabled = true
-        txt.enabled = false
+        html.required.set(true)
+        html.outputLocation.set(file("build/reports/detekt/detekt.html"))
+        xml.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(false)
+        md.required.set(false)
+    }
+}
+
+// KSP configuration
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
+}
+
+// Java compilation
+ tasks.withType<JavaCompile> {
+    sourceCompatibility = JavaVersion.VERSION_24.toString()
+    targetCompatibility = JavaVersion.VERSION_24.toString()
+    options.encoding = "UTF-8"
+    options.isIncremental = true
+}
+
+// Test tasks
+ tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
     }
 }

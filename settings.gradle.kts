@@ -64,6 +64,7 @@ include(":colleb-canvas")
 include(":colorblendr")
 include(":colorblendr-compose")
 include(":colorblendr-compose:colorblendr-compose-gradle-plugin")
+include(":secure-comm")
 
 // Configure all projects
 rootProject.children.forEach { project ->

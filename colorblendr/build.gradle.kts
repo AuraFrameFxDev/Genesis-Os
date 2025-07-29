@@ -1,13 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm")
 }
 
 group = "dev.aurakai"
 version = "1.0.0"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     implementation(kotlin("stdlib"))

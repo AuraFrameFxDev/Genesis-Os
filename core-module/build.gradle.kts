@@ -38,16 +38,19 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
     
-    kotlinOptions {
-        jvmTarget = "24"
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-k2",
-            "-Xskip-prerelease-check",
-            "-opt-in=kotlin.RequiresOptIn",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-            "-opt-in=kotlin.contracts.ExperimentalContracts",
-            "-Xjvm-default=all"
-        )
+    // Migrate deprecated kotlinOptions to compilerOptions DSL for K2
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
+            freeCompilerArgs.addAll(
+                "-Xuse-k2",
+                "-Xskip-prerelease-check",
+                "-opt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.ExperimentalStdlibApi",
+                "-opt-in=kotlin.contracts.ExperimentalContracts",
+                "-Xjvm-default=all"
+            )
+        }
     }
     
     buildFeatures {
