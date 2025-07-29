@@ -5,6 +5,11 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
+// Disable iOS ARM32 which is not supported by recent Compose/Kotlin versions
+System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
+System.setProperty("kotlin.native.disableTargets", "ios_arm32")
+System.setProperty("org.jetbrains.kotlin.native.ignoreDisabledTargets", "true")
+
 // Plugin Management
 pluginManagement {
     repositories {
@@ -34,6 +39,13 @@ pluginManagement {
                 // Hilt plugin
                 requested.id.id == "com.google.dagger.hilt.android" ->
                     useModule("com.google.dagger:hilt-android-gradle-plugin:${requested.version}")
+                    
+                // Compose plugin
+                requested.id.id == "org.jetbrains.compose" -> {
+                    useModule("org.jetbrains.compose:compose-gradle-plugin:${requested.version}")
+                    // Disable iOS ARM32 for Compose
+                    System.setProperty("org.jetbrains.compose.experimental.uikit.enabled", "false")
+                }
             }
         }
     }
@@ -56,17 +68,28 @@ dependencyResolutionManagement {
 
 // Include all modules
 rootProject.name = "AuraFrameFX"
-include(":presentation-module")
-include(":app")
-include(":feature-module")
-include(":core-module")
-include(":colleb-canvas")
-include(":colorblendr")
-include(":colorblendr-compose")
-include(":colorblendr-compose:colorblendr-compose-gradle-plugin")
-include(":secure-comm")
 
-// Configure all projects
+// List of all modules that actually exist in the project
+val modules = listOf(
+    ":app",
+    ":feature-module",
+    ":core-module",
+    ":colleb-canvas",
+    ":colorblendr",
+    ":secure-comm"
+)
+
+// Only include modules that exist in the filesystem
+modules.forEach { modulePath ->
+    val moduleDir = file(modulePath.removePrefix(":"))
+    if (moduleDir.exists() && moduleDir.isDirectory) {
+        include(modulePath)
+    } else {
+        logger.warn("Skipping non-existent module: $modulePath")
+    }
+}
+
+// Configure all included projects
 rootProject.children.forEach { project ->
     project.projectDir = file(project.name)
 }

@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -11,10 +12,18 @@ android {
 
     defaultConfig {
         minSdk = 33
-        targetSdk = 34
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+    }
+    
+    // Configure targetSdk for test and lint
+    testOptions {
+        targetSdk = 34
+    }
+    
+    lint {
+        targetSdk = 34
     }
 
     buildTypes {
@@ -27,45 +36,57 @@ android {
         }
     }
     
+    // Configure Java toolchain
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_24
         targetCompatibility = JavaVersion.VERSION_24
     }
     
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_24.toString()
+    // Configure Kotlin compiler options
+    kotlin {
+        jvmToolchain(24)
+        
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24)
+            freeCompilerArgs.addAll(
+                "-Xuse-k2",
+                "-Xskip-prerelease-check",
+                "-opt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.ExperimentalStdlibApi",
+                "-opt-in=kotlin.contracts.ExperimentalContracts",
+                "-Xjvm-default=all"
+            )
+        }
     }
     
     buildFeatures {
         compose = true
-        buildConfig = true
     }
-    
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion = "2.2.0-beta01"
     }
 }
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
     
     // AndroidX
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.16.0")
     
     // Security
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
-    implementation("com.google.crypto.tink:tink-android:1.10.0")
+    implementation("androidx.security:security-crypto:1.1.0-beta01")
+    implementation("com.google.crypto.tink:tink-android:1.18.0")
     
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    ksp("com.google.dagger:hilt-compiler:2.50")
+    implementation("com.google.dagger:hilt-android:2.57")
+    ksp("com.google.dagger:hilt-compiler:2.57")
     
     // Testing
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     
     // Bouncy Castle for cryptographic operations
-    implementation("org.bouncycastle:bcprov-jdk18on:1.77")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.81")
 }

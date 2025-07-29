@@ -1,4 +1,12 @@
 // Root build file - manages plugin versions and common configuration
+
+// Disable iOS ARM32 target which is not supported by recent Compose/Kotlin versions
+System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
+System.setProperty("kotlin.native.disableTargets", "ios_arm32")
+
+// Configure Compose settings before plugins are applied
+val enableCompose = true
+
 plugins {
     // Android plugins
     alias(libs.plugins.android.application) apply false
@@ -22,12 +30,51 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
+    
+    // Compose Multiplatform plugin (applied in settings.gradle.kts)
+    kotlin("multiplatform") version "2.2.0" apply false
 }
 
 // Common configuration for all subprojects
 subprojects {
-    // Configure Java toolchain for all Java projects
-// Configure all projects including the root project
+    // Configure Kotlin compiler options for all Kotlin projects
+    plugins.withId("org.jetbrains.kotlin.android") {
+        configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
+            compilerOptions {
+                // Enable K2 compiler
+                freeCompilerArgs.addAll(
+                    "-Xuse-k2",
+                    "-opt-in=kotlin.RequiresOptIn"
+                )
+            }
+        }
+    }
+    
+    // Configure Android projects
+    pluginManager.withPlugin("com.android.application") {
+        configure<com.android.build.gradle.BaseExtension> {
+            compileSdkVersion(34)
+            
+            defaultConfig {
+                minSdk = 33
+                targetSdk = 34
+            }
+            
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+            
+            // Configure Compose for Android projects
+            buildFeatures.compose = true
+            
+            composeOptions {
+                kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+            }
+        }
+    }
+    
+    // Configure all projects including the root project
     allprojects {
         // Configure Java toolchain for all projects
         plugins.withType<JavaBasePlugin> {

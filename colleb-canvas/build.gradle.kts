@@ -1,9 +1,8 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    kotlin("kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp") version "${libs.versions.ksp.get()}"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.compose.plugin)
 }
 
 android {
@@ -44,9 +43,8 @@ android {
     buildFeatures {
         compose = true
     }
-    
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+        kotlinCompilerExtensionVersion = "2.2.0-beta01"
     }
 }
 
@@ -68,14 +66,14 @@ dependencies {
     ksp(libs.hilt.compiler)
     
     // Hilt Navigation Compose
-    implementation(libs.hilt.navigation.compose)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${libs.versions.composeUiTooling.get()}")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.8.3")
     debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${libs.versions.composeUiTooling.get()}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
 }

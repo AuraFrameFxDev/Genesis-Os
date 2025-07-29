@@ -49,9 +49,8 @@ android {
     buildFeatures {
         compose = true
     }
-
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "2.2.0-beta01"
     }
 }
 

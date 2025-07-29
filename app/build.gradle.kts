@@ -1,12 +1,24 @@
+// App module build configuration
+@Suppress("DSL_SCOPE_VIOLATION") // False positive on version catalog access
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.serialization")
-    id("org.openapi.generator")
-    id("io.gitlab.arturbosch.detekt")
+    // Core plugins
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    // Hilt - Must be applied after Kotlin plugin
+    alias(libs.plugins.hilt.android)
+    
+    // KSP
+    alias(libs.plugins.ksp)
+    
+    // Kotlin plugins
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
+    
+    // Other plugins
+    id("org.openapi.generator") version "7.14.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.5"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 android {
@@ -20,6 +32,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -27,23 +41,29 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+        }
     }
 
+    // Build features
     buildFeatures {
-        buildConfig = true
-        compose = true
         viewBinding = true
+        compose = true
+        buildConfig = true
     }
 
     // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     // Packaging options
@@ -54,7 +74,12 @@ android {
                 "/META-INF/AL2.0",
                 "/META-INF/LGPL2.1",
                 "META-INF/LICENSE*",
-                "META-INF/NOTICE*"
+                "META-INF/NOTICE*",
+                "META-INF/*.version",
+                "META-INF/proguard/*",
+                "/*.properties",
+                "fabric/*.properties",
+                "DebugProbesKt.bin"
             )
         }
     }
@@ -66,20 +91,24 @@ android {
         }
     }
 
-    // Kotlin compilerOptions DSL (use enum if available, fallback to legacy)
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    // Kotlin compiler options with K2
+    kotlin {
         compilerOptions {
-            // If JvmTarget.JVM_24 is not available, use JvmTarget.JVM_17 or fallback to legacy kotlinOptions
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
             freeCompilerArgs.addAll(
-                listOf(
-                    "-Xjsr305=strict",
-                    "-opt-in=kotlin.RequiresOptIn"
-                )
+                "-Xuse-k2",
+                "-Xskip-prerelease-check",
+                "-opt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.ExperimentalStdlibApi",
+                "-opt-in=kotlin.contracts.ExperimentalContracts",
+                "-Xjvm-default=all",
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
             )
         }
     }
 
+    // Test options
     testOptions {
         unitTests.isIncludeAndroidResources = true
         unitTests.isReturnDefaultValues = true
@@ -94,11 +123,13 @@ android {
         library.set("jvm-retrofit2")
         apiPackage.set("dev.aurakai.auraframefx.api.generated")
         modelPackage.set("dev.aurakai.auraframefx.model.generated")
-        configOptions.set(mapOf(
-            "useCoroutines" to "true",
-            "serializationLibrary" to "kotlinx_serialization",
-            "enumPropertyNaming" to "UPPERCASE"
-        ))
+        configOptions.set(
+            mapOf(
+                "useCoroutines" to "true",
+                "serializationLibrary" to "kotlinx_serialization",
+                "enumPropertyNaming" to "UPPERCASE"
+            )
+        )
     }
 
     // Add generated sources to the main source set
@@ -114,33 +145,55 @@ android {
 
 // Dependencies block OUTSIDE android {}
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2025.07.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("com.google.dagger:hilt-android:2.57")
-    kapt("com.google.dagger:hilt-compiler:2.57")
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.0")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.3")
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Core AndroidX
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
+    
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    
+    // Network
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp3.logging.interceptor)
+    
+    // UI
+    implementation(libs.coil.compose)
+    implementation(libs.timber)
+    
+    // Core Library Desugaring
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+    
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation("androidx.test.espresso:espresso-core:${libs.versions.espresso.get()}")
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    
+    // Hilt testing
+    kspAndroidTest(libs.hilt.compiler.get())
 }
 
 // Detekt configuration
- tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     buildUponDefaultConfig = true
     allRules = false
     parallel = true
@@ -164,7 +217,7 @@ ksp {
 }
 
 // Java compilation
- tasks.withType<JavaCompile> {
+tasks.withType<JavaCompile> {
     sourceCompatibility = JavaVersion.VERSION_24.toString()
     targetCompatibility = JavaVersion.VERSION_24.toString()
     options.encoding = "UTF-8"
@@ -172,9 +225,22 @@ ksp {
 }
 
 // Test tasks
- tasks.withType<Test> {
+tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
+    }
+}
+
+spotless {
+    kotlin {
+        target("src/**/*.kt")
+        ktlint()
+        licenseHeaderFile(rootProject.file("config/spotless/copyright.kt"))
+    }
+    format("misc") {
+        target("**/*.md", "**/*.gradle", "**/*.toml")
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
