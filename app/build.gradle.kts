@@ -16,9 +16,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     
     // Other plugins
-    id("org.openapi.generator") version "7.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.5"
-    id("com.diffplug.spotless") version "6.25.0"
+    alias(libs.plugins.openapi.generator)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.spotless)
 }
 
 android {

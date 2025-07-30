@@ -1,9 +1,9 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -63,30 +63,30 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
+    implementation(libs.kotlin.stdlib)
     
     // AndroidX
-    implementation("androidx.core:core-ktx:1.16.0")
+    implementation(libs.androidx.core.ktx)
     
     // Security
-    implementation("androidx.security:security-crypto:1.1.0-beta01")
-    implementation("com.google.crypto.tink:tink-android:1.18.0")
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.google.crypto.tink.android)
     
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57")
-    ksp("com.google.dagger:hilt-compiler:2.57")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     
     // Testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     
     // Bouncy Castle for cryptographic operations
-    implementation("org.bouncycastle:bcprov-jdk18on:1.81")
+    implementation(libs.bouncycastle.bcprov)
 }

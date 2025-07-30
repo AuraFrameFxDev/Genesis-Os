@@ -1,9 +1,9 @@
 // Apply only the Android and Kotlin plugins directly, versions managed in root
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -41,8 +41,7 @@ android {
 
     // Configure Compose compiler options
     composeOptions {
-        kotlinCompilerExtensionVersion =
-            "1.9.0" // Use latest stable Compose compiler version for Compose 1.9
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
