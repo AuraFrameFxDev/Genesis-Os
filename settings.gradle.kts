@@ -9,8 +9,8 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
 System.setProperty("kotlin.native.disableTargets", "ios_arm32")
 System.setProperty("org.jetbrains.kotlin.native.ignoreDisabledTargets", "true")
+System.setProperty("org.jetbrains.compose.experimental.uikit.enabled", "false")
 
-// Plugin Management
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -23,35 +23,25 @@ pluginManagement {
             }
         }
     }
-
-    // Configure resolution strategy for plugins
     resolutionStrategy {
         eachPlugin {
             when {
-                // Android plugins
                 requested.id.namespace == "com.android" ->
                     useModule("com.android.tools.build:gradle:${requested.version}")
 
-                // KSP plugin
                 requested.id.id == "com.google.devtools.ksp" ->
                     useModule("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${requested.version}")
 
-                // Hilt plugin
                 requested.id.id == "com.google.dagger.hilt.android" ->
                     useModule("com.google.dagger:hilt-android-gradle-plugin:${requested.version}")
-                    
-                // Compose plugin
-                requested.id.id == "org.jetbrains.compose" -> {
+
+                requested.id.id == "org.jetbrains.compose" ->
                     useModule("org.jetbrains.compose:compose-gradle-plugin:${requested.version}")
-                    // Disable iOS ARM32 for Compose
-                    System.setProperty("org.jetbrains.compose.experimental.uikit.enabled", "false")
-                }
             }
         }
     }
 }
 
-// Dependency resolution management
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -66,8 +56,8 @@ dependencyResolutionManagement {
     }
 }
 
-// Include all modules
-rootProject.name = "AuraFrameFX"
+// Set the root project name to match your repository/project
+rootProject.name = "Genesis-Os"
 
 // List of all modules that actually exist in the project
 val modules = listOf(
@@ -85,7 +75,7 @@ modules.forEach { modulePath ->
     if (moduleDir.exists() && moduleDir.isDirectory) {
         include(modulePath)
     } else {
-        logger.warn("Skipping non-existent module: $modulePath")
+        logger.lifecycle("Skipping non-existent module: $modulePath")
     }
 }
 
