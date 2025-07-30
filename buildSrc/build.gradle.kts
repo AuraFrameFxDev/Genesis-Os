@@ -7,18 +7,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
-    `kotlin-dsl`
+    `kotlin-dsl` version "4.4.0"
     `kotlin-dsl-precompiled-script-plugins`
     id("org.jetbrains.dokka") version "1.9.20"
-    id("com.gradle.plugin-publish") version "1.2.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("com.autonomousapps.dependency-analysis") version "1.30.0"
 }
 
-// Configure Java toolchain for buildSrc to use Java 21
+// Configure Java toolchain for buildSrc to use Java 17
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-        vendor = JvmVendorSpec.AZUL
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -29,33 +28,33 @@ repositories {
 }
 
 dependencies {
-    // Kotlin plugins - using string notation to avoid early catalog access
+    // Updated versions for compatibility
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     
-    // Android plugins
-    implementation("com.android.tools.build:gradle:8.1.1")
-    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7")
+    // Updated Android Gradle Plugin
+    implementation("com.android.tools.build:gradle:8.7.3") // Updated from 8.1.1
+    implementation("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.5")
     
-    // Build tools
+    // Build tools - updated versions
     implementation("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.2.0-2.0.2")
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.57")
     implementation("androidx.room:room-compiler:2.7.2")
     
-    // OpenAPI Generator
-    implementation("org.openapitools:openapi-generator-gradle-plugin:7.5.0")
+    // Updated OpenAPI Generator
+    implementation("org.openapitools:openapi-generator-gradle-plugin:7.14.0")
     
     // Testing
     testImplementation(gradleTestKit())
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("com.google.truth:truth:1.4.4")
 }
 
-// Configure Kotlin compilation with K2
+// FIXED: Use Java 17 instead of 21 for broader compatibility
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget.set(JvmTarget.JVM_17) // Changed from JVM_21
         freeCompilerArgs.addAll(
             "-Xuse-k2",
             "-Xjvm-default=all",
@@ -116,18 +115,18 @@ tasks.withType<Test> {
     systemProperty("gradle.user.home", file("${'$'}{project.layout.buildDirectory.get()}/test-home"))
 }
 
-// Task to generate a report of all tasks in the build
+// FIXED: Remove unused variables to eliminate warnings
 tasks.register("taskReport") {
     group = "Help"
     description = "Generates a report of all available tasks"
     
     doLast {
         val tasks = project.tasks.sortedBy { it.name }
-        val maxLength = tasks.maxOf { it.name.length } + 4
+        val nameWidth = tasks.maxOfOrNull { it.name.length }?.plus(4) ?: 20
         
         println("\n=== Available Tasks ===\n")
         tasks.forEach { task ->
-            println("${'$'}{task.name.padEnd(maxLength)} - ${'$'}{task.description ?: 'No description'}")
+            println("${task.name.padEnd(nameWidth)} - ${task.description ?: "No description"}")
         }
     }
 }
