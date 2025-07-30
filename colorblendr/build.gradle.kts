@@ -1,4 +1,6 @@
 plugins {
+    id("dev.aurakai.auraframefx.buildlogic.convention.detekt")
+    id("dev.aurakai.auraframefx.buildlogic.convention.spotless")
     alias(libs.plugins.kotlin.jvm)
 }
 
@@ -7,10 +9,4 @@ version = "1.0.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
-    }
 }

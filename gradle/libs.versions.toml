@@ -1,6 +1,6 @@
 [versions]
 # Build System
-agp = "8.11.1"
+agp = "8.7.3"
 gradle = "8.14.3"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
@@ -19,7 +19,7 @@ androidx-core = "1.16.0"
 androidx-appcompat = "1.6.1"
 androidx-lifecycle = "2.9.2"
 androidx-activity = "1.9.0"
-androidx-navigation = "2.9.2"
+androidx-navigation = "2.8.5"
 
 # Dependency Injection
 hilt = "2.57"
@@ -52,6 +52,9 @@ openapi-generator = "7.14.0"
 junit = "4.13.2"
 androidx-test-ext = "1.2.1"
 espresso = "3.6.1"
+junit-jupiter = "5.10.1"
+truth = "1.4.4"
+
 
 # Development
 core-library-desugaring = "2.1.5"
@@ -118,6 +121,9 @@ core-library-desugaring = { group = "com.android.tools", name = "desugar_jdk_lib
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+
 
 [bundles]
 # === Compose Bundle (BOM managed versions) ===
@@ -184,7 +190,9 @@ datastore = [
 testing = [
     "junit",
     "androidx-test-ext-junit",
-    "androidx-test-espresso-core"
+    "androidx-test-espresso-core",
+    "junit-jupiter",
+    "truth"
 ]
 
 compose-testing = [
@@ -200,6 +208,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
 # === Build Processors ===
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -212,3 +221,8 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
+
+# === Google Services ===
+google-services = { id = "com.google.gms.google-services", version = "4.4.1" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.9" }

@@ -1,0 +1,45 @@
+name: Build Genesis-Os
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'  # Use Temurin instead of Azul
+        java-version: '17'       # Standardize on Java 17
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Create local.properties
+      run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug --stacktrace --no-daemon
+      env:
+        GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx6g -XX:+UseG1GC" -Dfile.encoding=UTF-8
