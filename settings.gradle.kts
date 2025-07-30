@@ -1,21 +1,6 @@
 @file:Suppress("UnstableApiUsage", "JCenterRepository")
 
-// Enable Gradle features
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
-
-pluginManagement {
-    toolchainManagement {
-        jvm {
-            javaRepositories {
-                repository("foojay") {
-                    resolverClass.set(org.gradle.platform.toolchain.foojay.FoojayToolchainResolver::class.java)
-                }
-            }
-        }
-    }
-}
-
+// 3. pluginManagement block for plugin repositories and plugin versions
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -24,6 +9,7 @@ pluginManagement {
     }
 }
 
+// 4. dependencyResolutionManagement for dependency repositories
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -32,15 +18,16 @@ dependencyResolutionManagement {
     }
 }
 
-// Set the root project name to match your repository/project
+// 5. Root project name and module includes
 rootProject.name = "Genesis-Os"
+include(":app", ":sandbox-ui", ":collab-canvas", ":oracledrive")
 
 // List of all modules that actually exist in the project
 val modules = listOf(
     ":app",
     ":feature-module",
     ":core-module",
-    ":colleb-canvas",
+    ":collab-canvas",
     ":colorblendr",
     ":secure-comm"
 )
