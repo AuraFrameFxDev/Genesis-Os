@@ -34,7 +34,10 @@ android {
         targetCompatibility = JavaVersion.toVersion("24")
     }
 
-    kotlinOptions {
-        jvmTarget = "24"
+    // Replace kotlinOptions with compilerOptions
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("24"))
+        }
     }
 }
