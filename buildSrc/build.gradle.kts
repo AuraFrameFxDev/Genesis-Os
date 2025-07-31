@@ -24,6 +24,12 @@ kotlin {
 }
 
 dependencies {
+    // Test dependencies for unit testing the build script
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation(gradleTestKit())
+
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     // Use version catalog references
     implementation(libs.findPlugin("android.application").get())
@@ -32,4 +38,17 @@ dependencies {
     implementation(libs.findPlugin("hilt.android").get())
     implementation(libs.findLibrary("spotless.gradle.plugin").get())
     implementation(libs.findLibrary("detekt.gradle.plugin").get())
+}
+
+tasks.test {
+    useJUnitPlatform()
+    
+    // Configure test execution
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = false
+    }
+    
+    // Set system properties for tests
+    systemProperty("gradle.test.kit.debug", "false")
 }
