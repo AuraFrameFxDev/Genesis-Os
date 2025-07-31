@@ -1,3 +1,7 @@
+// MUST be first - before any plugins
+System.setProperty("kotlin.native.disableTargets", "ios_arm32")
+System.setProperty("org.jetbrains.kotlin.native.ignoreDisabledTargets", "true")
+
 // Root build file - manages plugin versions and common configuration
 
 // Configure Java toolchain for all projects
@@ -11,10 +15,6 @@ allprojects {
         }
     }
 }
-
-// Disable iOS ARM32 target which is not supported by recent Compose/Kotlin versions
-System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
-System.setProperty("kotlin.native.disableTargets", "ios_arm32")
 
 // Configure Compose settings before plugins are applied
 val enableCompose = true
