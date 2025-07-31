@@ -36,12 +36,12 @@ dependencies {
     testImplementation(gradleTestKit())
 
    
-    implementation(libs.android.gradle.plugin)
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.ksp.gradle.plugin)
-    implementation(libs.hilt.android.gradle.plugin)
-    implementation(libs.spotless.gradle.plugin)
-    implementation(libs.detekt.gradle.plugin)
+    implementation(libs.androidGradlePlugin)
+    implementation(libs.kotlinGradlePlugin)
+    implementation(libs.kspGradlePlugin)
+    implementation(libs.hiltAndroidGradlePlugin)
+    implementation(libs.spotlessGradlePlugin)
+    implementation(libs.detektGradlePlugin)
 }
 
 tasks.test {
