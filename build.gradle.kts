@@ -1,6 +1,3 @@
-// MUST be first - before any plugins
-System.setProperty("kotlin.native.disableTargets", "ios_arm32")
-System.setProperty("org.jetbrains.kotlin.native.ignoreDisabledTargets", "true")
 
 // Root build file - manages plugin versions and common configuration
 
