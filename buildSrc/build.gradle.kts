@@ -35,13 +35,13 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(gradleTestKit())
 
-   
-    implementation(libs.android.gradle.plugin)
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.ksp.gradle.plugin)
-    implementation(libs.hilt.android.gradle.plugin)
-    implementation(libs.spotless.gradle.plugin)
-    implementation(libs.detekt.gradle.plugin)
+ dependencies {
+    implementation(libs.android.gradlePlugin) // Now refers to libs.android-gradlePlugin
+    implementation(libs.kotlin.gradlePlugin) // Now refers to libs.kotlin-gradlePlugin
+    implementation(libs.ksp.gradlePlugin) // Now refers to libs.ksp-gradlePlugin
+    implementation(libs.hilt.android.gradlePlugin) // Now refers to libs.hilt-android-gradlePlugin
+    implementation(libs.spotless.gradlePlugin) // Now refers to libs.spotless-gradlePlugin
+    implementation(libs.detekt.gradlePlugin) // Now refers to libs.detekt-gradlePlugin
 }
 
 tasks.test {
