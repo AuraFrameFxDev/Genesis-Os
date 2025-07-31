@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
     id("com.google.devtools.ksp")
+    id("org.jetbrains.compose") version "1.5.3"
 
     // Hilt
     id("com.google.dagger.hilt.android")
