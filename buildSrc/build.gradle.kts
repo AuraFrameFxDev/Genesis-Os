@@ -26,6 +26,8 @@ kotlin {
     jvmToolchain(24) 
 }
 
+val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    // Use version catalog references for dependencies used by buildSrc itself
 dependencies {
     // Test dependencies for unit testing the build script
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
@@ -33,8 +35,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(gradleTestKit())
 
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-    // Use version catalog references for dependencies used by buildSrc itself
+   
     implementation(libs.findPlugin("android.application").get())
     implementation(libs.findPlugin("kotlin.android").get())
     implementation(libs.findPlugin("ksp").get())
