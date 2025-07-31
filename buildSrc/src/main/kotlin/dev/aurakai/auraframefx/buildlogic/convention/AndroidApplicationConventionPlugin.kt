@@ -5,18 +5,22 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("com.android.application")
             pluginManager.apply("org.jetbrains.kotlin.android")
+            pluginManager.apply(extensions.getByType<VersionCatalogsExtension>().named("libs").findPlugin("ksp").get().get().pluginId)
 
             extensions.configure<ApplicationExtension> {
-                compileSdk = 36
+                val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+                compileSdk = libs.findVersion("compile-sdk").get().toString().toInt()
                 defaultConfig {
-                    minSdk = 33
-                    targetSdk = 36
+                    minSdk = libs.findVersion("min-sdk").get().toString().toInt()
+                    targetSdk = libs.findVersion("target-sdk").get().toString().toInt()
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                     vectorDrawables.useSupportLibrary = true
                 }
@@ -37,12 +41,16 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
 
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_1_8
-                    targetCompatibility = JavaVersion.VERSION_1_8
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
                 }
 
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "17"
+                    freeCompilerArgs = freeCompilerArgs + listOf(
+                        "-Xcontext-receivers",
+                        "-opt-in=kotlin.RequiresOptIn"
+                    )
                 }
 
                 buildFeatures {
@@ -51,7 +59,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
 
                 composeOptions {
-                    kotlinCompilerExtensionVersion = "2.2.0"
+                    kotlinCompilerExtensionVersion = libs.findVersion("compose-compiler").get().toString()
                 }
 
                 packaging {

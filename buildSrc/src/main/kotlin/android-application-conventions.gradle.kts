@@ -1,16 +1,21 @@
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
+
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
     namespace = "com.example.myapplication" // Replace with your app's package name
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk = libs.findVersion("compile-sdk").get().toString().toInt()
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        minSdk = libs.findVersion("min-sdk").get().toString().toInt()
+        targetSdk = libs.findVersion("target-sdk").get().toString().toInt()
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -27,11 +32,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
+        sourceCompatibility = JavaVersion.toVersion(libs.findVersion("java-version").get().toString())
+        targetCompatibility = JavaVersion.toVersion(libs.findVersion("java-version").get().toString())
     }
 
     kotlinOptions {
-        jvmTarget = libs.versions.javaVersion.get()
+        jvmTarget = libs.findVersion("java-version").get().toString()
     }
 }

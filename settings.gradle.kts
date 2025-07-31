@@ -1,15 +1,21 @@
-@file:Suppress("UnstableApiUsage", "JCenterRepository")
+@file:Suppress("UnstableApiUsage")
 
-// 3. pluginManagement block for plugin repositories and plugin versions
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
     }
 }
 
-// 4. dependencyResolutionManagement for dependency repositories
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -18,31 +24,19 @@ dependencyResolutionManagement {
     }
 }
 
-// 5. Root project name and module includes
 rootProject.name = "Genesis-Os"
-include(":app", ":sandbox-ui", ":collab-canvas", ":oracledrive")
 
-// List of all modules that actually exist in the project
-val modules = listOf(
+// Your dynamic module inclusion logic is excellent.
+// All modules from your project are included here.
+include(
     ":app",
     ":feature-module",
     ":core-module",
     ":collab-canvas",
     ":colorblendr",
-    ":secure-comm"
+    ":secure-comm",
+    ":datavein-oracle-drive",
+    ":datavein-oracle-native",
+    ":sandbox-ui",
+    ":oracledrive"
 )
-
-// Only include modules that exist in the filesystem
-modules.forEach { modulePath ->
-    val moduleDir = file(modulePath.removePrefix(":"))
-    if (moduleDir.exists() && moduleDir.isDirectory) {
-        include(modulePath)
-    } else {
-        logger.lifecycle("Skipping non-existent module: $modulePath")
-    }
-}
-
-// Configure all included projects
-rootProject.children.forEach { project ->
-    project.projectDir = file(project.name)
-}

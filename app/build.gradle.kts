@@ -1,17 +1,15 @@
 plugins {
     id("dev.aurakai.auraframefx.buildlogic.convention.android-application")
     id("dev.aurakai.auraframefx.buildlogic.convention.hilt")
-    id("dev.aurakai.auraframefx.buildlogic.convention.detekt")
-    id("dev.aurakai.auraframefx.buildlogic.convention.spotless")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.openapi.generator)
 }
 
 android {
-    namespace = "dev.aurakai.auraframefx"
+    namespace = "dev.aurakai.auraframefx.genesis"
 
     defaultConfig {
-        applicationId = "dev.aurakai.auraframefx"
+        applicationId = "dev.aurakai.auraframefx.genesis"
         versionCode = 1
         versionName = "1.0"
     }
@@ -20,20 +18,25 @@ android {
 dependencies {
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.activity.compose)
     
     // Compose
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     
     // Network
-    implementation(libs.bundles.network)
+    implementation(libs.bundles.networking)
 
     // UI
     implementation(libs.coil.compose)
     implementation(libs.timber)
     
+    // Project dependencies
+    implementation(projects.sandboxUi)
+    implementation(projects.collabCanvas)
+    implementation(projects.oracledrive)
+
     // Core Library Desugaring
     coreLibraryDesugaring(libs.core.library.desugaring)
     

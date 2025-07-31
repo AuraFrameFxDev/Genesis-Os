@@ -3,6 +3,7 @@ import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.jvm.toolchain.JvmVendorSpec
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
@@ -14,12 +15,6 @@ plugins {
     id("com.autonomousapps.dependency-analysis") version "1.30.0"
 }
 
-// Configure Java toolchain for buildSrc to use Java 17
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
 
 repositories {
     google()
@@ -31,7 +26,7 @@ dependencies {
     // Updated versions for compatibility
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     
     // Updated Android Gradle Plugin
     implementation("com.android.tools.build:gradle:8.7.3") // Updated from 8.1.1
@@ -51,12 +46,10 @@ dependencies {
     testImplementation("com.google.truth:truth:1.4.4")
 }
 
-// FIXED: Use Java 17 instead of 21 for broader compatibility
+// Use Java 24
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17) // Changed from JVM_21
         freeCompilerArgs.addAll(
-            "-Xuse-k2",
             "-Xjvm-default=all",
             "-opt-in=kotlin.RequiresOptIn",
             "-opt-in=kotlin.ExperimentalStdlibApi",

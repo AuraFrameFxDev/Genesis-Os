@@ -1,15 +1,19 @@
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.kotlin.dsl.getByType
+
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "com.example.mylibrary" // Replace with your library's package name
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    compileSdk = libs.findVersion("compile-sdk").get().toString().toInt()
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        minSdk = libs.findVersion("min-sdk").get().toString().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -24,11 +28,38 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
-        targetCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = libs.versions.javaVersion.get()
+        jvmTarget = "17"
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xcontext-receivers",
+            "-opt-in=kotlin.RequiresOptIn"
+        )
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.findVersion("compose-compiler").get().toString()
+    }
+
+    kotlin {
+        jvmToolchain(24)
+    }
+}
+
+dependencies {
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
+    implementation(libs.findLibrary("androidx.core.ktx").get())
+    implementation(libs.findLibrary("androidx.lifecycle.runtime").get())
+
+    testImplementation(libs.findLibrary("junit").get())
+    androidTestImplementation(libs.findLibrary("androidx.test.ext.junit").get())
+    androidTestImplementation(libs.findLibrary("androidx.test.espresso.core").get())
 }
