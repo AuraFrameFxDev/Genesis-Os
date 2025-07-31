@@ -1,6 +1,7 @@
 // Settings configured for Gradle 8.14.3 and Java 24
 @file:Suppress("UnstableApiUsage", "JCenterRepository")
 
+
 // Enable Gradle features
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
@@ -74,7 +75,7 @@ val modules = listOf(
     ":app",
     ":feature-module",
     ":core-module",
-    ":colleb-canvas",
+    ":collab-canvas",
     ":colorblendr",
     ":secure-comm"
 )

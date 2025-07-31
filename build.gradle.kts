@@ -1,5 +1,23 @@
 // Root build file - manages plugin versions and common configuration
 
+// Configure toolchain management for Java 24
+toolchainManagement {
+    jvm {
+        javaToolchains {
+            javaToolchain {
+                languageVersion = JavaLanguageVersion.of(24)
+                implementation = JvmImplementation.VENDOR_SPECIFIC
+                vendor = JvmVendorSpec.matching("Eclipse Adoptium")
+            }
+        }
+    }
+    versionCatalogs {
+        create("libs") {
+            from(files("gradle/libs.versions.toml"))
+        }
+    }
+}
+
 // Disable iOS ARM32 target which is not supported by recent Compose/Kotlin versions
 System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
 System.setProperty("kotlin.native.disableTargets", "ios_arm32")

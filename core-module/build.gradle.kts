@@ -66,24 +66,20 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "2.2.0-beta01"
     }
-            )
-        }
-    }
-    
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.0-beta01"
-    }
-    
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/AL2.0"
             excludes += "/META-INF/LGPL2.1"
         }
+    }
+}
+
+// Java toolchain configuration
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(24))
     }
 }
 

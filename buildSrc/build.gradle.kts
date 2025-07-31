@@ -13,17 +13,9 @@ java {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "22"
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_22)
     }
-}
-
-repositories {
-    google()
-    mavenCentral()
-    gradlePluginPortal()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
 }
 
 // Configure Kotlin to use the same Java version
@@ -33,11 +25,11 @@ kotlin {
 
 // Define plugin versions
 val kotlinVersion = "2.2.0"
-val agpVersion = "8.2.2"
+val agpVersion = "8.11.1"
 val spotlessVersion = "6.25.0"
 val detektVersion = "1.23.6"  // Latest stable Detekt version
-val kspVersion = "2.2.0-1.0.21" // Example KSP version, adjust as needed
-val hiltVersion = "2.51.1" // Example Hilt version, adjust as needed
+val kspVersion = "2.2.0-2.0.2" // Example KSP version, adjust as needed
+val hiltVersion = "2.57" // Example Hilt version, adjust as needed
 
 dependencies {
     // Android Gradle Plugin
@@ -58,8 +50,3 @@ dependencies {
     // Detekt Plugin
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion")
 }
-
-
-
-
-
