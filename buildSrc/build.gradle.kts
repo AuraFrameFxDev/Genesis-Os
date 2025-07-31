@@ -15,13 +15,15 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) // Note: Java 24 needs JVM_21 target, or check for JVM_24 if supported
+        // Java 24 needs a compatible JVM target. JVM_21 is often sufficient.
+        // Check Kotlin Gradle plugin documentation for specific JVM_24 support if needed.
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) 
     }
 }
 
-// Configure Kotlin to use the same Java version
+// Configure Kotlin to use the same Java version for the compiler itself
 kotlin {
-    jvmToolchain(24) // This sets the JDK used by the Kotlin compiler itself
+    jvmToolchain(24) 
 }
 
 dependencies {
@@ -32,7 +34,7 @@ dependencies {
     testImplementation(gradleTestKit())
 
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-    // Use version catalog references
+    // Use version catalog references for dependencies used by buildSrc itself
     implementation(libs.findPlugin("android.application").get())
     implementation(libs.findPlugin("kotlin.android").get())
     implementation(libs.findPlugin("ksp").get())
