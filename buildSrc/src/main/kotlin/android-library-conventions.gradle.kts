@@ -40,7 +40,7 @@ android {
     // Replace kotlinOptions with compilerOptions
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget("24"))
+            jvmTarget = "24"
         }
     }
 }
