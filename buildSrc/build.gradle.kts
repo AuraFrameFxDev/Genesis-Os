@@ -15,7 +15,7 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-    jvmTarget = "24"
+    jvmTarget = 24
 }
 
 // Configure Kotlin to use the same Java version
