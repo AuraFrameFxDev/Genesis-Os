@@ -1,7 +1,7 @@
 plugins {
     `kotlin-dsl`
     `kotlin-dsl-precompiled-script-plugins`
-    `version-catalog`  // Add this line
+    `version-catalog`
 }
 
 // Set Java toolchain to version 24 for build logic
@@ -15,12 +15,13 @@ java {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-    jvmTarget 24
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) // Note: Java 24 needs JVM_21 target, or check for JVM_24 if supported
+    }
 }
 
 // Configure Kotlin to use the same Java version
 kotlin {
-    jvmToolchain(24)
+    jvmToolchain(24) // This sets the JDK used by the Kotlin compiler itself
 }
 
 dependencies {
