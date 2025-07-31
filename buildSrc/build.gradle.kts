@@ -36,10 +36,6 @@ dependencies {
     testImplementation(gradleTestKit())
 
    
-    implementation(libs.findPlugin("android.application").get())
-    implementation(libs.findPlugin("kotlin.android").get())
-    implementation(libs.findPlugin("ksp").get())
-    implementation(libs.findPlugin("hilt.android").get())
     implementation(libs.findLibrary("spotless.gradle.plugin").get())
     implementation(libs.findLibrary("detekt.gradle.plugin").get())
 }
