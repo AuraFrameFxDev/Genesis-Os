@@ -36,8 +36,12 @@ dependencies {
     testImplementation(gradleTestKit())
 
    
-    implementation(libs.findLibrary("spotless.gradle.plugin").get())
-    implementation(libs.findLibrary("detekt.gradle.plugin").get())
+    implementation(libs.android.gradle.plugin)
+    implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.ksp.gradle.plugin)
+    implementation(libs.hilt.android.gradle.plugin)
+    implementation(libs.spotless.gradle.plugin)
+    implementation(libs.detekt.gradle.plugin)
 }
 
 tasks.test {
