@@ -1,24 +1,19 @@
 // App module build configuration
 @Suppress("DSL_SCOPE_VIOLATION") // False positive on version catalog access
 plugins {
-    // Core plugins
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-    // Hilt - Must be applied after Kotlin plugin
-    alias(libs.plugins.hilt.android)
-    
-    // KSP
-    alias(libs.plugins.ksp)
+    // Core plugins - apply directly with versions from version catalog
+    id("com.android.application")
     
     // Kotlin plugins
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.compose)
-    
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
+    id("com.google.devtools.ksp")
+
+    // Hilt
+    id("com.google.dagger.hilt.android")
+
     // Other plugins
     id("org.openapi.generator") version "7.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.5"
-    id("com.diffplug.spotless") version "6.25.0"
 }
 
 android {
@@ -63,7 +58,7 @@ android {
 
     // Compose options
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     // Packaging options
@@ -88,23 +83,6 @@ android {
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(24))
-        }
-    }
-
-    // Kotlin compiler options with K2
-    kotlin {
-        compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
-            freeCompilerArgs.addAll(
-                "-Xuse-k2",
-                "-Xskip-prerelease-check",
-                "-opt-in=kotlin.RequiresOptIn",
-                "-opt-in=kotlin.ExperimentalStdlibApi",
-                "-opt-in=kotlin.contracts.ExperimentalContracts",
-                "-Xjvm-default=all",
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
-            )
         }
     }
 
@@ -178,33 +156,17 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation("androidx.test.espresso:espresso-core:${libs.versions.espresso.get()}")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     
     // Hilt testing
-    kspAndroidTest(libs.hilt.compiler.get())
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.57")
 }
 
-// Detekt configuration
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    buildUponDefaultConfig = true
-    allRules = false
-    parallel = true
-    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    baseline.set(file("$rootDir/config/detekt/baseline.xml"))
-    reports {
-        html.required.set(true)
-        html.outputLocation.set(file("build/reports/detekt/detekt.html"))
-        xml.required.set(false)
-        txt.required.set(false)
-        sarif.required.set(false)
-        md.required.set(false)
-    }
-}
 
-// KSP configuration
+// Place KSP arguments outside android block
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
@@ -224,18 +186,5 @@ tasks.withType<Test> {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
-    }
-}
-
-spotless {
-    kotlin {
-        target("src/**/*.kt")
-        ktlint()
-        licenseHeaderFile(rootProject.file("config/spotless/copyright.kt"))
-    }
-    format("misc") {
-        target("**/*.md", "**/*.gradle", "**/*.toml")
-        trimTrailingWhitespace()
-        endWithNewline()
     }
 }

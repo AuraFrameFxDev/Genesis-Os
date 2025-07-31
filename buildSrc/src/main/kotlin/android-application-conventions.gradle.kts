@@ -6,18 +6,17 @@ import org.gradle.kotlin.dsl.getByType
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    // Apply KSP here to make it available to all application modules
-    alias(libs.plugins.ksp)
+    // id("com.google.devtools.ksp") // Uncomment if KSP is required
 }
 
 android {
     namespace = "com.example.myapplication" // Replace with your app's package name
-    compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdk = 36 // Use your desired compileSdk version
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = libs.versions.min.sdk.get().toInt()
-        targetSdk = libs.versions.target.sdk.get().toInt()
+        minSdk = 33 // Use your desired minSdk version
+        targetSdk = 36 // Use your desired targetSdk version
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -36,9 +35,5 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion("24")
         targetCompatibility = JavaVersion.toVersion("24")
-    }
-
-    kotlinOptions {
-        jvmTarget = "24"
     }
 }

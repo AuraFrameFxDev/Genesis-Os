@@ -1,19 +1,13 @@
 // Root build file - manages plugin versions and common configuration
 
-// Configure toolchain management for Java 24
-toolchainManagement {
-    jvm {
-        javaToolchains {
-            javaToolchain {
-                languageVersion = JavaLanguageVersion.of(24)
-                implementation = JvmImplementation.VENDOR_SPECIFIC
-                vendor = JvmVendorSpec.matching("Eclipse Adoptium")
+// Configure Java toolchain for all projects
+allprojects {
+    plugins.withType<JavaBasePlugin> {
+        configure<JavaPluginExtension> {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(24))
+                vendor.set(JvmVendorSpec.ADOPTIUM)
             }
-        }
-    }
-    versionCatalogs {
-        create("libs") {
-            from(files("gradle/libs.versions.toml"))
         }
     }
 }
@@ -26,31 +20,13 @@ System.setProperty("kotlin.native.disableTargets", "ios_arm32")
 val enableCompose = true
 
 plugins {
-    // Android plugins
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.android.library) apply false
-
-    // Kotlin plugins
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.kapt) apply false
-    alias(libs.plugins.kotlin.serialization) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-
-    // KSP (Kotlin Symbol Processing)
-    alias(libs.plugins.ksp) apply false
-
-    // Hilt for dependency injection
-    alias(libs.plugins.hilt.android) apply false
-
-    // Other plugins
+    // Only apply plugins that are not already applied in settings.gradle.kts or version catalog
     id("org.openapi.generator") version "7.14.0" apply false
-    id("io.gitlab.arturbosch.detekt") version "1.23.5" apply false
+    
+    // Apply other plugins with `apply false` to make them available for subprojects
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
-    
-    // Compose Multiplatform plugin (applied in settings.gradle.kts)
-    kotlin("multiplatform") version "2.2.0" apply false
 }
 
 // Common configuration for all subprojects
@@ -71,11 +47,11 @@ subprojects {
     // Configure Android projects
     pluginManager.withPlugin("com.android.application") {
         configure<com.android.build.gradle.BaseExtension> {
-            compileSdkVersion(34)
+            compileSdkVersion(36)
             
             defaultConfig {
                 minSdk = 33
-                targetSdk = 34
+                targetSdk =(34)
             }
             
             compileOptions {
@@ -106,8 +82,8 @@ subprojects {
             
             // Configure Kotlin compilation for all source sets
             tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-                kotlinOptions {
-                    jvmTarget = "22"
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_22)
                 }
             }
             

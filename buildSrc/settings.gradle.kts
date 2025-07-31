@@ -1,22 +1,26 @@
-// Explicitly set the root project name for consistent build caching
-rootProject.name = "buildSrc"
-
-// Configure plugin management for buildSrc
 pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven(url = "https://jitpack.io")
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
     }
 }
 
-// Configure dependency resolution for buildSrc
-@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven(url = "https://jitpack.io")
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
     }
 }

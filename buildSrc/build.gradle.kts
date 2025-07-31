@@ -31,6 +31,14 @@ val detektVersion = "1.23.6"  // Latest stable Detekt version
 val kspVersion = "2.2.0-2.0.2" // Example KSP version, adjust as needed
 val hiltVersion = "2.57" // Example Hilt version, adjust as needed
 
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+    maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven(url = "https://jitpack.io")
+}
+
 dependencies {
     // Android Gradle Plugin
     implementation("com.android.tools.build:gradle:$agpVersion")

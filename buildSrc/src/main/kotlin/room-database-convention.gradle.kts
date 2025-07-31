@@ -8,17 +8,10 @@ plugins {
 }
 
 dependencies {
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-    
-    // Add Room libraries using version catalog
-    implementation(libs.findLibrary("room.runtime").get())
-    implementation(libs.findLibrary("room.ktx").get())
-    
-    // This is the crucial line: use "ksp" for the Room compiler
-    ksp(libs.findLibrary("room.compiler").get())
-    
-    // Optional: Room testing support
-    testImplementation(libs.findLibrary("room.testing").get())
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    add("ksp", "androidx.room:room-compiler:2.6.1")
+    testImplementation("androidx.room:room-testing:2.6.1")
 }
 
 android {

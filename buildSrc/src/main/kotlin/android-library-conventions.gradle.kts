@@ -6,17 +6,16 @@ import org.gradle.kotlin.dsl.getByType
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    // Apply KSP here to make it available to all library modules
-    alias(libs.plugins.ksp)
+    // id("com.google.devtools.ksp") // Uncomment if KSP is required
 }
 
 android {
     namespace = "com.example.mylibrary" // Replace with your library's package name
-    compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdk = 36 // Use your desired compileSdk version
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.get().toInt()
-        targetSdk = 36
+        minSdk = 33 // Use your desired minSdk version
+        targetSdk = 36 // Use your desired targetSdk version
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

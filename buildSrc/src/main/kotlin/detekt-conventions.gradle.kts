@@ -11,9 +11,9 @@ plugins {
 
 // Configure Detekt for all projects
 configure<DetektExtension> {
-    // Use version from version catalog
-    toolVersion = libs.versions.detekt.get()
-    
+    // Use explicit version string instead of version catalog
+    toolVersion = "1.23.6"
+
     // Use the default config file from root project
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     
@@ -26,26 +26,16 @@ configure<DetektExtension> {
     // Enable parallel execution
     parallel = true
     
-    // Enable build failure on any finding with priority "error"
-    buildUponDefaultConfig = true
-    
     // Disable auto-correct (use ktlint for formatting)
     autoCorrect = false
-    
-    // Enable type resolution
-    debug {
-        // Enable to see the AST of the file being analyzed
-        // Use when reporting an issue with detekt
-        report = System.getProperty("detekt.debug", "false").toBoolean()
-    }
 }
 
 // Configure dependencies
 dependencies {
-    // Use the version catalog for detekt plugins
-    detektPlugins(libs.detekt.formatting)
-    detektPlugins(libs.detekt.compose)
-    
+    // Use explicit dependency coordinates
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-compose:1.23.6")
+
     // Add custom rules if needed
     // detektPlugins("your:custom-detekt-rules:1.0.0")
 }
@@ -101,14 +91,6 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         xml.outputLocation.set(file("build/reports/detekt/detekt.xml"))
         txt.outputLocation.set(file("build/reports/detekt/detekt.txt"))
         sarif.outputLocation.set(file("build/reports/detekt/detekt.sarif"))
-    }
-}
-    
-    reports {
-        html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(false)
-        sarif.required.set(false)
     }
 }
 

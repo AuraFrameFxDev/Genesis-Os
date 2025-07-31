@@ -6,12 +6,8 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
-// Disable iOS ARM32 which is not supported by recent Compose/Kotlin versions
-System.setProperty("kotlin.native.ignoreDisabledTargets", "true")
-System.setProperty("kotlin.native.disableTargets", "ios_arm32")
-System.setProperty("org.jetbrains.kotlin.native.ignoreDisabledTargets", "true")
-System.setProperty("org.jetbrains.compose.experimental.uikit.enabled", "false")
 
+// Configure plugin resolution
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -24,19 +20,20 @@ pluginManagement {
             }
         }
     }
+    
+    // Use version catalog for all plugin versions
+    plugins {
+        id("com.android.application") version "8.11.1"
+        id("org.jetbrains.kotlin.android") version "2.2.0"
+        id("com.google.devtools.ksp") version "2.2.0-2.0.2"
+        id("com.google.dagger.hilt.android") version "2.57"
+    }
+    
     resolutionStrategy {
         eachPlugin {
             when {
-                requested.id.namespace == "com.android" ->
-                    useModule("com.android.tools.build:gradle:${requested.version}")
-
-                requested.id.id == "com.google.devtools.ksp" ->
-                    useModule("com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:${requested.version}")
-
-                requested.id.id == "com.google.dagger.hilt.android" ->
-                    useModule("com.google.dagger:hilt-android-gradle-plugin:${requested.version}")
-
-                requested.id.id == "org.jetbrains.compose" ->
+                // Only resolve plugins that aren't already handled by the version catalog
+                requested.id.namespace == "org.jetbrains.compose" ->
                     useModule("org.jetbrains.compose:compose-gradle-plugin:${requested.version}")
             }
         }

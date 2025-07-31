@@ -12,8 +12,8 @@ spotless {
         target("**/*.kt")
         targetExclude("**/build/**")
         
-        // Use KtLint for Kotlin formatting
-        ktlint(libs.versions.ktlint.get())
+        // Use KtLint for Kotlin formatting with explicit version
+        ktlint("1.2.1")
             .editorConfigOverride(
                 mapOf(
                     "ktlint_standard_no-wildcard-imports" to "false",
@@ -35,7 +35,7 @@ spotless {
     kotlinGradle {
         target("**/*.gradle.kts")
         targetExclude("**/build/**")
-        ktlint(libs.versions.ktlint.get())
+        ktlint("1.2.1")
         trimTrailingWhitespace()
         indentWithTabs()
         endWithNewline()
