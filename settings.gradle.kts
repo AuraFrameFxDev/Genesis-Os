@@ -53,7 +53,17 @@ dependencyResolutionManagement {
                 includeGroupByRegex("com\\.github\\..*")
             }
         }
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
+        flatDir {
+            dirs("${rootDir}/libs", "${rootDir}/app/libs")
+        }
     }
+}
+
+// Create the libs directory if it doesn't exist
+val libsDir = file("${rootDir}/libs")
+if (!libsDir.exists()) {
+    libsDir.mkdirs()
 }
 
 // Set the root project name to match your repository/project

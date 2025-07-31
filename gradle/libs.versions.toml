@@ -1,10 +1,13 @@
 [versions]
 compose = "1.8.2"
 # Core
-agp = "8.11.1"
-gradle = "8.14.3"
+agp = "8.6.1"
+gradle = "8.6"
 kotlin = "2.2.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.2.0"
+spotless = "6.25.0"
+ktlint = "1.2.1"
+detekt = "1.23.6"
 androidx.core.ktx = "1.12.0"
 androidx.lifecycle.runtime.ktx = "2.6.2"
 androidx.lifecycle.viewmodel.compose = "2.6.2"
@@ -59,7 +62,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 
 # KSP
-ksp = { id = "com.google.devtools.ksp", version = "2.2.0-2.0.2" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # Hilt
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

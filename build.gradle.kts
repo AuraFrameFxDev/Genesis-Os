@@ -81,17 +81,22 @@ subprojects {
             configure<JavaPluginExtension> {
                 toolchain {
                     languageVersion.set(JavaLanguageVersion.of(24))
-                    // Remove vendor specification to allow any JDK 24 implementation
-                    // vendor.set(JvmVendorSpec.AZUL)
+                }
+                sourceCompatibility = JavaVersion.VERSION_22
+                targetCompatibility = JavaVersion.VERSION_22
+            }
+            
+            // Configure Kotlin compilation for all source sets
+            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+                kotlinOptions {
+                    jvmTarget = "22"
                 }
             }
             
-            // Explicitly set Java toolchain for all source sets
-            afterEvaluate {
-                tasks.withType<JavaCompile>().configureEach {
-                    sourceCompatibility = JavaVersion.VERSION_24.toString()
-                    targetCompatibility = JavaVersion.VERSION_24.toString()
-                }
+            // Configure Java compilation for all source sets
+            tasks.withType<JavaCompile>().configureEach {
+                sourceCompatibility = JavaVersion.VERSION_22.toString()
+                targetCompatibility = JavaVersion.VERSION_22.toString()
             }
         }
 
