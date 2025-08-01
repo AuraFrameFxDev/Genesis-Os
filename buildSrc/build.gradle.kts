@@ -35,13 +35,14 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(gradleTestKit())
 
- dependencies {
-    implementation(libs.android.gradlePlugin) // Now refers to libs.android-gradlePlugin
-    implementation(libs.kotlin.gradlePlugin) // Now refers to libs.kotlin-gradlePlugin
-    implementation(libs.ksp.gradlePlugin) // Now refers to libs.ksp-gradlePlugin
-    implementation(libs.hilt.android.gradlePlugin) // Now refers to libs.hilt-android-gradlePlugin
-    implementation(libs.spotless.gradlePlugin) // Now refers to libs.spotless-gradlePlugin
-    implementation(libs.detekt.gradlePlugin) // Now refers to libs.detekt-gradlePlugin
+   
+    implementation("com.android.tools.build:gradle:8.11.1")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.2.0-2.0.2")
+    implementation("com.google.dagger:hilt-android-gradle-plugin:2.57")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6")
+
 }
 
 tasks.test {
