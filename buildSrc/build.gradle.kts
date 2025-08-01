@@ -36,12 +36,12 @@ dependencies {
     testImplementation(gradleTestKit())
 
    
-    implementation(libs.androidGradlePlugin)
-    implementation(libs.kotlinGradlePlugin)
-    implementation(libs.kspGradlePlugin)
-    implementation(libs.hiltAndroidGradlePlugin)
-    implementation(libs.spotlessGradlePlugin)
-    implementation(libs.detektGradlePlugin)
+    implementation("com.android.tools.build:gradle:8.11.1")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.2.0-2.0.2")
+    implementation("com.google.dagger:hilt-android-gradle-plugin:2.57")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6")
 }
 
 tasks.test {
