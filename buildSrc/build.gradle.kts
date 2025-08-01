@@ -17,7 +17,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     compilerOptions {
         // Java 24 needs a compatible JVM target. JVM_21 is often sufficient.
         // Check Kotlin Gradle plugin documentation for specific JVM_24 support if needed.
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21) 
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24) 
     }
 }
 
