@@ -42,6 +42,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android-gradle-plugin:2.57")
     implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.6")
+
 }
 
 tasks.test {
